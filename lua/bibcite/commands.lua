@@ -179,6 +179,28 @@ local function show_citation_popup()
     style = 'minimal',
     border = 'rounded',
   })
+
+  -- Close on CursorMoved or ModeChanged
+  local close_events = { 'CursorMoved', 'ModeChanged' }
+  for _, evt in ipairs(close_events) do
+    vim.api.nvim_create_autocmd(evt, {
+      buffer = 0,
+      once = true,
+      callback = function()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, true)
+        end
+      end,
+    })
+  end
+
+  -- Close on keypress
+  local key_close = vim.on_key(function()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+    vim.on_key(nil, vim.api.nvim_create_namespace 'bibcite_popup')
+  end, vim.api.nvim_create_namespace 'bibcite_popup')
 end
 
 -- Register Neovim commands
