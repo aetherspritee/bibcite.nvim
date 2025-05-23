@@ -3,6 +3,7 @@
 local config = require 'bibcite.config'
 local M = {}
 
+-- Parse .bib file and return a list of structured entries
 local function parse_bibtex(file)
   local entries = {}
   local current_entry = nil
@@ -10,13 +11,16 @@ local function parse_bibtex(file)
   local inside_entry = false
 
   for line in io.lines(file) do
+    -- Start of a new entry
     if not inside_entry and line:match '^@' then
       current_entry = line
       brace_level = select(2, line:gsub('{', '')) - select(2, line:gsub('}', ''))
       inside_entry = true
     elseif inside_entry then
+      -- Continue collecting entry lines
       current_entry = current_entry .. '\n' .. line
       brace_level = brace_level + select(2, line:gsub('{', '')) - select(2, line:gsub('}', ''))
+      -- End of entry
       if brace_level <= 0 then
         local entry = {}
         local entry_type, key = current_entry:match '^@(%w+)%s*{%s*([^,%s]+)'
@@ -24,6 +28,7 @@ local function parse_bibtex(file)
           entry.key = key
           entry.type = entry_type
 
+          -- Match fields in either {value} or "value" format
           for field, value in current_entry:gmatch '([%w_]+)%s*=%s*{(.-)}%s*,?' do
             entry[field:lower()] = value
           end
