@@ -20,6 +20,26 @@ local function format_display(entry)
   return table.concat(parts, ' ')
 end
 
+-- Helper function because vim does not auto-wrap text.
+local function wrap_text(text, width)
+  local lines = {}
+  for line in text:gmatch '[^\n]+' do
+    local current = ''
+    for word in line:gmatch '%S+' do
+      if vim.fn.strdisplaywidth(current .. ' ' .. word) > width then
+        table.insert(lines, current)
+        current = word
+      else
+        current = current == '' and word or (current .. ' ' .. word)
+      end
+    end
+    if current ~= '' then
+      table.insert(lines, current)
+    end
+  end
+  return lines
+end
+
 -- Reusable Telescope picker function to select a BibTeX entry
 -- Accepts a prompt_title and a callback to call with the selected entry
 function M.pick_entry(prompt_title, on_select)
@@ -34,6 +54,8 @@ function M.pick_entry(prompt_title, on_select)
   local conf = require('telescope.config').values
   local actions = require 'telescope.actions'
   local action_state = require 'telescope.actions.state'
+  local previewers = require 'telescope.previewers'
+  local entry_display = require 'telescope.pickers.entry_display'
 
   pickers
     .new({}, {
@@ -57,6 +79,52 @@ function M.pick_entry(prompt_title, on_select)
         end,
       },
       sorter = conf.generic_sorter {},
+
+      previewer = previewers.new_buffer_previewer {
+        define_preview = function(self, entry, _)
+          local e = entry.value
+          local lines = {}
+          -- With a little margin to prevent bleed.
+          local text_width = vim.api.nvim_win_get_width(self.state.winid) - 3
+
+          table.insert(lines, string.format('Key: %s', e.key or ''))
+          table.insert(lines, '')
+
+          table.insert(lines, 'Author(s):')
+          vim.list_extend(lines, wrap_text(e.author or 'N/A', text_width))
+          table.insert(lines, '')
+
+          table.insert(lines, string.format('Year: %s', e.year or ''))
+          table.insert(lines, '')
+
+          table.insert(lines, 'Title:')
+          vim.list_extend(lines, wrap_text(e.title or 'N/A', text_width))
+          table.insert(lines, '')
+
+          if e.doi then
+            table.insert(lines, 'DOI:')
+            table.insert(lines, e.doi)
+            table.insert(lines, '')
+          end
+
+          if e.file then
+            table.insert(lines, '📎 Attached File')
+          else
+            table.insert(lines, '— No file attached')
+          end
+          table.insert(lines, '')
+
+          table.insert(lines, 'Abstract:')
+          if e.abstract then
+            vim.list_extend(lines, wrap_text(e.abstract, text_width))
+          else
+            table.insert(lines, 'N/A')
+          end
+
+          vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+        end,
+      },
+
       attach_mappings = function(_, map)
         actions.select_default:replace(function()
           local selection = action_state.get_selected_entry()
