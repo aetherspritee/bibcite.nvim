@@ -112,17 +112,9 @@ function M.load_bib()
     return
   end
 
-  M.entries = vim.tbl_map(function(entry)
-    local display = string.format('%s: %s', entry.key, entry.title or '[no title]')
-    return {
-      key = entry.key,
-      display = display,
-      text = vim.inspect(entry),
-      raw = entry,
-    }
-  end, entries)
+  M.entries = entries
 
-  vim.notify(string.format('[bibcite] Loaded %d BibTeX entries.', #M.entries))
+  vim.notify(string.format('[bibcite] Loaded %d BibTeX entries.', #entries))
 end
 
 -- Debug utility to print loaded entries
