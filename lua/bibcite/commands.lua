@@ -21,7 +21,8 @@ local function format_display(entry)
 end
 
 -- Reusable Telescope picker function to select a BibTeX entry
-function M.pick_entry(prompt_title)
+-- Accepts a prompt_title and a callback to call with the selected entry
+function M.pick_entry(prompt_title, on_select)
   local has_telescope, telescope = pcall(require, 'telescope')
   if not has_telescope then
     vim.notify('[bibcite] Telescope is not available', vim.log.levels.ERROR)
@@ -34,53 +35,51 @@ function M.pick_entry(prompt_title)
   local actions = require 'telescope.actions'
   local action_state = require 'telescope.actions.state'
 
-  return coroutine.create(function(co)
-    pickers
-      .new({}, {
-        prompt_title = prompt_title,
-        finder = finders.new_table {
-          results = bibtex.entries,
-          entry_maker = function(entry)
-            local display = format_display(entry)
-            local search_text = table.concat({ entry.key, entry.author, entry.title, entry.year, entry.journal }, ' ')
-            return {
-              value = entry,
-              display = display,
-              ordinal = search_text,
-            }
-          end,
-        },
-        sorter = conf.generic_sorter {},
-        attach_mappings = function(_, map)
-          actions.select_default:replace(function()
-            local selection = action_state.get_selected_entry()
-            actions.close(_)
-            coroutine.resume(co, selection and selection.value or nil)
-          end)
-          return true
+  pickers
+    .new({}, {
+      prompt_title = prompt_title,
+      finder = finders.new_table {
+        results = bibtex.entries,
+        entry_maker = function(entry)
+          local display = format_display(entry)
+          local search_text = table.concat({
+            entry.key or '',
+            entry.author or '',
+            entry.title or '',
+            entry.year or '',
+            entry.journal or '',
+          }, ' ')
+          return {
+            value = entry,
+            display = display,
+            ordinal = search_text,
+          }
         end,
-      })
-      :find()
-
-    local selected = coroutine.yield()
-    return selected
-  end)
+      },
+      sorter = conf.generic_sorter {},
+      attach_mappings = function(_, map)
+        actions.select_default:replace(function()
+          local selection = action_state.get_selected_entry()
+          actions.close(_)
+          if selection and on_select then
+            on_select(selection.value)
+          end
+        end)
+        return true
+      end,
+    })
+    :find()
 end
 
 -- Register Neovim commands
 function M.setup()
   -- Create :CiteInsert command to insert citation key into buffer
   vim.api.nvim_create_user_command('CiteInsert', function()
-    local co = M.pick_entry 'Insert Citation'
-    if co and coroutine.status(co) == 'suspended' then
-      coroutine.resume(co)
-    end
-    coroutine.wrap(function()
-      local selected = coroutine.yield()
-      if selected then
-        vim.api.nvim_put({ selected.key }, '', true, true) -- insert key into buffer
+    M.pick_entry('Insert Citation', function(entry)
+      if entry then
+        vim.api.nvim_put({ entry.key }, '', true, true)
       end
-    end)()
+    end)
   end, {})
 end
 
