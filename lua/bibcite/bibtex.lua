@@ -72,4 +72,15 @@ function M.load_bib()
   vim.notify(string.format('[bibcite] Loaded %d BibTeX entries.', #M.entries))
 end
 
+-- Debug utility to print loaded entries
+function M.debug_print_entries()
+  if not M.entries then
+    print '[bibcite] No entries loaded'
+    return
+  end
+  for _, entry in ipairs(M.entries) do
+    print(vim.inspect(entry))
+  end
+end
+
 return M

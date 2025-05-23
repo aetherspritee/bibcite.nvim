@@ -81,6 +81,11 @@ function M.setup()
       end
     end)
   end, {})
+
+  -- Create :CiteDebug command to print loaded BibTeX entries
+  vim.api.nvim_create_user_command('CiteDebug', function()
+    bibtex.debug_print_entries()
+  end, {})
 end
 
 return M
