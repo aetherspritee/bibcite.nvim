@@ -139,6 +139,48 @@ function M.pick_entry(prompt_title, on_select)
     :find()
 end
 
+local function show_citation_popup()
+  local word = vim.fn.expand '<cword>'
+  local match = nil
+
+  -- Find the entry with matching key
+  for _, entry in ipairs(bibtex.entries or {}) do
+    if entry.key == word then
+      match = entry
+      break
+    end
+  end
+
+  if not match then
+    vim.notify('No BibTeX entry found for key: ' .. word, vim.log.levels.INFO)
+    return
+  end
+
+  local lines = {
+    'Author: ' .. (match.author or 'N/A'),
+    'Title:  ' .. (match.title or 'N/A'),
+    'Year:   ' .. (match.year or 'N/A'),
+  }
+
+  local width = 0
+  for _, line in ipairs(lines) do
+    width = math.max(width, #line)
+  end
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+  local win = vim.api.nvim_open_win(buf, false, {
+    relative = 'cursor',
+    row = 1,
+    col = 0,
+    width = width + 2,
+    height = #lines,
+    style = 'minimal',
+    border = 'rounded',
+  })
+end
+
 -- Register Neovim commands
 function M.setup()
   -- Create :CiteInsert command to insert citation key into buffer
@@ -154,6 +196,9 @@ function M.setup()
   vim.api.nvim_create_user_command('CiteDebug', function()
     bibtex.debug_print_entries()
   end, {})
+
+  -- :CitePeek to show citation popup
+  vim.api.nvim_create_user_command('CitePeek', show_citation_popup, {})
 end
 
 return M
