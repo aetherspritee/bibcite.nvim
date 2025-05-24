@@ -3,7 +3,9 @@
 local config = require 'bibcite.config'
 local M = {}
 
--- Parse .bib file and return a list of structured entries
+-- Parse .bib into an array of entries.
+-- Each entry has fields  like they are in the .bib file.
+-- In addition, it has a field for the citekey as well.
 local function parse_bibtex(file)
   local entries = {}
   local current_entry = nil
@@ -99,6 +101,7 @@ local function parse_bibtex(file)
   return entries
 end
 
+-- Loads the default bibliography as set in the config, and adds it to the module.
 function M.load_bib()
   local path = config.options.bibtex_path
   if not path or path == '' then
