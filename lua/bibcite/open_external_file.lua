@@ -1,12 +1,13 @@
 -- Utilities for opening associated files (PDFs etc)
 
 local config = require 'bibcite.config'
+local bibtex = require 'bibcite.bibtex'
 
 local M = {}
 
 -- bib entries that have a 'path' field often have them in weird formats.
 -- This function normalises them into an absolutely formed path.
-function M.resolve_pdf_path(field)
+local function resolve_pdf_path(field)
   if not field or field == '' then
     return nil
   end
@@ -44,7 +45,7 @@ function M.resolve_pdf_path(field)
 end
 
 -- Open the file with the given path with an external viewer.
-function M.open_file(path)
+local function open_file(path)
   if vim.fn.executable 'xdg-open' == 1 then
     vim.fn.jobstart({ 'xdg-open', path }, { detach = true })
   elseif vim.fn.has 'macunix' == 1 then
@@ -52,6 +53,23 @@ function M.open_file(path)
   else
     vim.notify('[bibcite] No supported file opener found', vim.log.levels.ERROR)
   end
+end
+
+-- Checks if the entry under the cursor has an associated file (PDF), and opens it if it does.
+function M.open_external_file_of_refentry_under_cursor()
+  local key = vim.fn.expand '<cword>'
+  for _, entry in ipairs(bibtex.entries or {}) do
+    if entry.key == key then
+      local path = resolve_pdf_path(entry.file)
+      if path and vim.fn.filereadable(path) == 1 then
+        open_file(path)
+      else
+        vim.notify('[bibcite] PDF not found: ' .. (path or 'nil'), vim.log.levels.WARN)
+      end
+      return
+    end
+  end
+  vim.notify('[bibcite] No BibTeX entry for key: ' .. key, vim.log.levels.INFO)
 end
 
 -- TODO: Add opening of note, re-using code where possible.
