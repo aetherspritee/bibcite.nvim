@@ -11,26 +11,35 @@ function M.resolve_pdf_path(field)
     return nil
   end
 
-  local path = field:match '{:(.-):' or field
-  if path:match '^/' then
-    -- If the path is already absolute, e.g. `/home/my_user/pdfs/Smith2020.pdf`,
-    -- Then just return the path as is.
-    return path -- already absolute
-  elseif path:match '^files' or path:match '^:files' then
+  -- Remove any JabRef-type suffix like :PDF
+  -- This is a file hint.
+  -- Just remove that, for now we assume everything is openable with
+  -- a pdf viewer.
+  local raw_path = field:match '{:(.-):' or field
+  raw_path = raw_path:gsub(':%w+$', '') -- strip :PDF, :DOCX etc.
+
+  -- Expand tilde to home directory
+  if raw_path:sub(1, 2) == '~/' then
+    raw_path = vim.fn.expand(raw_path)
+  end
+
+  -- If the path is already absolute, e.g. `/home/my_user/pdfs/Smith2020.pdf`,
+  -- Then just return the path as is.
+  if raw_path:sub(1, 1) == '/' then
+    return raw_path
+  elseif raw_path:match '^:?files/' then
+    -- JabRef-style path (starts with files/ or :files/)
     -- Jabref has functionality to link files in a central directory.
     -- It prefixes the path with ':files'.
     -- e.g. `{:files/Sakai2004.pdf:PDF}`
     -- We simulate this substitution by stripping this prefix,
     -- and inserting the directory you have set in the config.
-    -- note that there is also an ending :PDF.
-    -- This is a file hint.
-    -- Just remove that, for now we assume everything is openable with
-    -- a pdf viewer.
-    local subpath = path:gsub('^:?files/?', '')
+    local subpath = raw_path:gsub('^:?', ''):gsub('^files/', '')
     return config.options.pdf_dir .. '/' .. subpath
+
+  -- Default fallback (relative or malformed path)
   else
-    -- TODO: Expand relative path '~/pdfs/Smith2020.pdf'
-    return path
+    return raw_path
   end
 end
 
