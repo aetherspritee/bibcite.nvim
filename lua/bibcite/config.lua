@@ -6,7 +6,9 @@ local M = {
     -- Path for the default .bib file to open
     bibtex_path = nil,
     -- Directory where the current .bib file expects to be able to find external pdf files.
-    pdf_dir = nil, -- base path for :files/
+    pdf_dir = nil,
+    -- Directory where you store your notes. Notes are expected to have the name of the citekey.
+    notes_dir = nil,
   },
 }
 

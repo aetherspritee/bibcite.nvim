@@ -25,6 +25,8 @@ function M.setup()
   vim.api.nvim_create_user_command('CitePeek', popup.show_citation_popup, {})
 
   vim.api.nvim_create_user_command('CiteOpen', open_external_file.open_external_file_of_refentry_under_cursor, {})
+
+  vim.api.nvim_create_user_command('CiteNote', open_external_file.open_note_of_refentry_under_cursor, {})
 end
 
 return M
