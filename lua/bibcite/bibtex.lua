@@ -124,6 +124,9 @@ function M.load_bib()
     return
   end
 
+  -- TODO: If there is a .bib file in the curren pwd, open that.
+  -- TODO: support opening multiple .bib files, appending their results while ignoring duplicates.
+
   -- When load_bib has been run, make all of the loaded things
   -- accessible whenever you access this variable.
   M.entries = entries
