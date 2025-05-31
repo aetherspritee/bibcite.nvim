@@ -3,7 +3,9 @@
 -- These are all the options that are exposed.
 local M = {
   options = {
+    -- Path for the default .bib file to open
     bibtex_path = nil,
+    -- Directory where the current .bib file expects to be able to find external pdf files.
     pdf_dir = nil, -- base path for :files/
   },
 }
