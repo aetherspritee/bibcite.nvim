@@ -65,8 +65,14 @@ local function open_external_file(path)
   local is_text = ext == '.md' or ext == '.txt' or ext == '.org'
 
   if is_text then
-    -- TODO: Allow setting in user settings if you prefer opening in current buffer, vsplit, whatever.
-    vim.cmd('edit ' .. vim.fn.fnameescape(path))
+    local mode = config.options.note_open_mode
+    if mode == 'hsplit' then
+      vim.cmd('split ' .. vim.fn.fnameescape(path))
+    elseif mode == 'vsplit' then
+      vim.cmd('vsplit ' .. vim.fn.fnameescape(path))
+    else
+      vim.cmd('edit ' .. vim.fn.fnameescape(path))
+    end
   else
     if vim.fn.executable 'xdg-open' == 1 then
       vim.fn.jobstart({ 'xdg-open', path }, { detach = true })
@@ -84,7 +90,6 @@ local function resolve_note_path(key)
   local extensions = { '.md', '.txt', '.org' }
 
   -- TODO: Also look in notes field.
-  -- TODO: If no notes file exists yet, prompt to create new notes file.
 
   for _, ext in ipairs(extensions) do
     local variants = {

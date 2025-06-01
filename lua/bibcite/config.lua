@@ -9,6 +9,10 @@ local M = {
     pdf_dir = nil,
     -- Directory where you store your notes. Notes are expected to have the name of the citekey.
     notes_dir = nil,
+    -- If you open a notes file (or the text file that is referenced by a bibentry itself),
+    -- How do you want to open it?
+    -- options: "current" (in current window), "hsplit", "vsplit"
+    text_file_open_mode = 'current',
   },
 }
 
