@@ -89,8 +89,9 @@ local function resolve_note_path(key)
   local dir = config.options.notes_dir
   local extensions = { '.md', '.txt', '.org' }
 
-  -- TODO: Also look in notes field.
+  -- TODO: Also add checking for a non-bibtex standard 'notes' field.
 
+  -- TODO: Instead of checking all the files, cache all the notes and PDFs. Still do this as a separate step from loading the plugin, to not make it too slow to startup.
   for _, ext in ipairs(extensions) do
     local variants = {
       string.format('%s/%s%s', dir, key, ext),

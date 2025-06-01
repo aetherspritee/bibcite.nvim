@@ -32,6 +32,9 @@ function M.show_citation_popup()
     'Year:   ' .. (match.year or 'N/A'),
   }
 
+  -- TODO: Add show first N lines of the notes field.
+  -- TODO: Show whether or not there is a PDF/external file attached that can be opened.
+
   local width = 0
   for _, line in ipairs(lines) do
     width = math.max(width, #line)
