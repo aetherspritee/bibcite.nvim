@@ -119,7 +119,35 @@ function M.open_external_file_of_refentry_under_cursor()
   end
 end
 
+-- Helper: Prompt user and create a new note file
+local function prompt_and_create_note_file(citekey)
+  local suggested_path = string.format('%s/%s.md', config.options.notes_dir, citekey:lower())
+  local answer = vim.fn.input(string.format("No note file exists yet for '%s'. Create it? [y/N]: ", citekey))
+
+  if answer:lower() ~= 'y' then
+    vim.notify('[bibcite] Note creation cancelled.', vim.log.levels.INFO)
+    return
+  end
+
+  -- Ensure notes directory exists
+  vim.fn.mkdir(config.options.notes_dir, 'p')
+
+  -- Create and initialize the note file
+  local fd = io.open(suggested_path, 'w')
+  if not fd then
+    vim.notify('[bibcite] Failed to create note file: ' .. suggested_path, vim.log.levels.ERROR)
+    return
+  end
+
+  fd:write(string.format('# Notes for %s\n\n', citekey))
+  fd:close()
+
+  -- Open it in a new buffer
+  vim.cmd('edit ' .. vim.fn.fnameescape(suggested_path))
+end
+
 -- Checks if the entry under the cursor has a note file, and opens it if it does.
+-- If it doesn't prompts you to create a new one.
 function M.open_note_of_refentry_under_cursor()
   local key = vim.fn.expand '<cword>'
   local entry = find_bib_entry_by_key(key)
@@ -129,11 +157,11 @@ function M.open_note_of_refentry_under_cursor()
     return
   end
 
-  local path = resolve_note_path(entry.key)
-  if path then
-    open_external_file(path)
+  local note_path = resolve_note_path(entry.key)
+  if note_path then
+    open_external_file(note_path)
   else
-    vim.notify('[bibcite] Note not found for key: ' .. entry.key, vim.log.levels.WARN)
+    prompt_and_create_note_file(entry.key)
   end
 end
 
