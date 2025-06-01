@@ -5,15 +5,6 @@ local bibtex = require 'bibcite.bibtex'
 
 local M = {}
 
--- Helper to find entry by citekey
-local function find_bib_entry_by_key(key)
-  for _, entry in ipairs(bibtex.entries or {}) do
-    if entry.key == key then
-      return entry
-    end
-  end
-end
-
 -- bib entries that have a 'path' field often have them in weird formats.
 -- This function normalises them into an absolutely formed path.
 local function resolve_pdf_field_path(field)
@@ -110,7 +101,7 @@ end
 -- Checks if the entry under the cursor has an associated file (PDF), and opens it if it does.
 function M.open_external_file_of_refentry_under_cursor()
   local key = vim.fn.expand '<cword>'
-  local entry = find_bib_entry_by_key(key)
+  local entry = bibtex.entries[key]
 
   if not entry then
     vim.notify('[bibcite] No BibTeX entry for key: ' .. key, vim.log.levels.INFO)
@@ -156,7 +147,7 @@ end
 -- If it doesn't prompts you to create a new one.
 function M.open_note_of_refentry_under_cursor()
   local key = vim.fn.expand '<cword>'
-  local entry = find_bib_entry_by_key(key)
+  local entry = bibtex.entries[key]
 
   if not entry then
     vim.notify('[bibcite] No BibTeX entry for key: ' .. key, vim.log.levels.INFO)

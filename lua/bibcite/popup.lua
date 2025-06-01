@@ -14,7 +14,7 @@ function M.show_citation_popup()
   local match = nil
 
   -- Find the entry with matching key
-  for _, entry in ipairs(bibtex.entries or {}) do
+  for _, entry in pairs(bibtex.entries or {}) do
     if entry.key == word then
       match = entry
       break

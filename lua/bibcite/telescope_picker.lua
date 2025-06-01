@@ -43,6 +43,15 @@ local function wrap_text(text, width)
   return lines
 end
 
+-- Telescope does not like key-value pair. So, small function to convert it to just the data, not with the key :)
+local function dictionary_values_only(entries_dict)
+  local result = {}
+  for _, entry in pairs(entries_dict) do
+    table.insert(result, entry)
+  end
+  return result
+end
+
 -- Reusable Telescope picker function to select a BibTeX entry
 -- Accepts a prompt_title and a callback to call with the selected entry
 function M.telescope_entry_picker(prompt_title, on_select)
@@ -64,7 +73,7 @@ function M.telescope_entry_picker(prompt_title, on_select)
     .new({}, {
       prompt_title = prompt_title,
       finder = finders.new_table {
-        results = bibtex.entries,
+        results = dictionary_values_only(bibtex.entries),
         entry_maker = function(entry)
           local display = format_display(entry)
           local search_text = table.concat({

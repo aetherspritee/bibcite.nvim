@@ -54,6 +54,7 @@ end
 -- Parse .bib into an array of entries.
 -- Each entry has fields  like they are in the .bib file.
 -- In addition, it has a field for the citekey as well.
+-- Returns a dictionary of citekey-citationdata
 local function parse_bibtex(file)
   local entries = {}
   local current_entry_lines = {}
@@ -98,7 +99,7 @@ local function parse_bibtex(file)
             pos = new_pos
           end
 
-          table.insert(entries, entry)
+          entries[key] = entry
         end
 
         current_entry_lines = {}
@@ -140,7 +141,7 @@ function M.debug_print_entries()
     print '[bibcite] No entries loaded'
     return
   end
-  for _, entry in ipairs(M.entries) do
+  for _, entry in pairs(M.entries) do
     print(vim.inspect(entry))
   end
 end
