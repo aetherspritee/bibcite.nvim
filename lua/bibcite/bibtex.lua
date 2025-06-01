@@ -1,7 +1,9 @@
 -- Functionality for loading and parsing a .bib file
 
 local config = require 'bibcite.config'
-local M = {}
+local M = {
+  entries = {},
+}
 
 -- Optimized brace counting function
 local function update_brace_level(line, current_level)
@@ -111,28 +113,52 @@ local function parse_bibtex(file)
   return entries
 end
 
--- Loads the default bibliography as set in the config, and adds it to the module.
-function M.load_bib()
-  local path = config.options.bibtex_path
+--- Loads a .bib file from the given path and merges its entries into `M.entries`.
+-- @param path string: Path to the .bib file
+function M.load_bib_from_path(path)
   if not path or path == '' then
-    vim.notify('[bibcite] No BibTeX file path specified.', vim.log.levels.ERROR)
+    vim.notify('[bibcite] No path provided for .bib file.', vim.log.levels.ERROR)
     return
   end
 
-  local ok, entries = pcall(parse_bibtex, path)
+  local ok, new_entries = pcall(parse_bibtex, path)
   if not ok then
-    vim.notify('[bibcite] Failed to load .bib file: ' .. entries, vim.log.levels.ERROR)
+    vim.notify('[bibcite] Failed to load .bib file: ' .. new_entries, vim.log.levels.ERROR)
     return
   end
 
-  -- TODO: If there is a .bib file in the curren pwd, open that.
-  -- TODO: support opening multiple .bib files, appending their results while ignoring duplicates.
+  local added, skipped = 0, 0
 
-  -- When load_bib has been run, make all of the loaded things
-  -- accessible whenever you access this variable.
-  M.entries = entries
+  for key, entry in pairs(new_entries) do
+    if not M.entries[key] then
+      M.entries[key] = entry
+      added = added + 1
+    else
+      skipped = skipped + 1
+    end
+  end
 
-  vim.notify(string.format('[bibcite] Loaded %d BibTeX entries.', #entries))
+  vim.notify(string.format('[bibcite] Loaded %d new entries from %s (%d duplicates ignored)', added, path, skipped), vim.log.levels.INFO)
+end
+
+-- Loads the default bibliography as set in the config, and adds it to the module.
+function M.load_bib_from_config()
+  local path = config.options.bibtex_path
+  M.load_bib_from_path(path)
+end
+
+function M.load_all_bibs_in_pwd()
+  local cwd = vim.fn.getcwd()
+  local bib_files = vim.fn.glob(cwd .. '/*.bib', true, true)
+
+  if vim.tbl_isempty(bib_files) then
+    vim.notify('[bibcite] No .bib files found in current directory: ' .. cwd, vim.log.levels.DEBUG)
+    return
+  end
+
+  for _, path in ipairs(bib_files) do
+    M.load_bib_from_path(path)
+  end
 end
 
 -- Debug utility to print loaded entries

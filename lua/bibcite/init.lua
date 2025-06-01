@@ -3,7 +3,9 @@ local M = {}
 
 function M.setup(opts)
   require('bibcite.config').setup(opts)
-  require('bibcite.bibtex').load_bib()
+  local bib_loader = require 'bibcite.bibtex'
+  bib_loader.load_bib_from_config()
+  bib_loader.load_all_bibs_in_pwd()
   require('bibcite.commands').setup()
 end
 
