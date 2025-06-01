@@ -4,6 +4,7 @@
 local M = {
   options = {
     -- Path for the default .bib file to open
+    -- TODO: Allow reading multiple files, make this an array.
     bibtex_path = nil,
     -- Directory where the current .bib file expects to be able to find external pdf files.
     pdf_dir = nil,
