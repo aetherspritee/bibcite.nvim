@@ -1,22 +1,18 @@
 # 📚 bibcite.nvim
-
 **bibcite.nvim** is a lightweight Neovim plugin designed to make your academic and research workflow more fluid.
 Quickly search through your bibliography, open associated notes, or open files- all from within your favourite editor!
 
 # Purpose
-The purpose of **bibcite.nvim** is to provide fast and simple access to BibTeX citation data and related materials such as associated files and notes while working inside Neovim.
-This plugin is not a comprehensive reference manager like Zotero, JabRef, or Mendeley.
-Instead, it's for users who:
+**bibcite.nvim** provides fast and simple access to BibTeX citation data and related materials such as associated files and notes while working inside Neovim.
+This plugin is *not* a comprehensive reference manager, but is instead intended to be used together with a tool that either directly saves as .bib like [Bibiman](https://codeberg.org/lukeflo/bibiman) or JabRef, or exports to it like Zotero, or Mendeley.
+This plugin is **read-only** when it comes to BibTeX entries: it won't let you add, delete, or modify entries within Neovim.
+Instead, it embraces the unix philosophy of doing just one thing, and doing it well. This way it stays minimal, simple, and fast.
+It complements your existing reference workflow by integrating citation lookup, file access, and note-taking into the editor you already use.
+Instead, **bibcite.nvim** is for users who:
 - Already manage their .bib file with some other tool
 - Want to insert citation keys into their writing quickly
 - Like putting references to literature outside of latex documents, such as in code comments.
 - Write notes on their literature in plain-text or Markdown
-
-This plugin is **read-only** when it comes to BibTeX entries: it won't let you add, delete, or modify entries within Neovim.
-Instead, it embraces the unix philosophy of doing just one thing, and doing it well.
-It complements your existing reference workflow by integrating citation lookup, file access, and note-taking into the editor you already use.
-
-By focusing on just these pieces- lookup, preview, opening, and note navigation—bibcite.nvim stays fast, minimal, and purpose-driven.
 
 This plugin has great synergy when using something like [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide) or [obsidian.nvim](https://github.com/epwalsh/obsidian.nvim).
 
