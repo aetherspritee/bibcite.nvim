@@ -84,7 +84,7 @@ The following configuration keys can be set:
 Command	Description
 - `:CiteInsert` - Use Telescope to pick and insert a citation key at the cursor.
 - `:CitePeek` - Show a popup preview of the citation under the cursor (author, title, year, PDF/note status).
--`:CiteOpen` - Open the PDF or external file linked to the citation under the cursor. If the file is a text-like file, it will be opened in neovim directly. If it is not, it will open it in an external program, using your preferred file viewer.
+- `:CiteOpen` - Open the PDF or external file linked to the citation under the cursor. If the file is a text-like file, it will be opened in neovim directly. If it is not, it will open it in an external program, using your preferred file viewer.
 - `:CiteNote` - Open the note file for the citation under the cursor (prompts to creates one if missing).
 
 # File Matching
