@@ -5,9 +5,11 @@ Quickly search through your bibliography, open associated notes, or open files- 
 # Purpose
 **bibcite.nvim** provides fast and simple access to BibTeX citation data and related materials such as associated files and notes while working inside Neovim.
 This plugin is *not* a comprehensive reference manager, but is instead intended to be used together with a tool that either directly saves as .bib like [Bibiman](https://codeberg.org/lukeflo/bibiman) or JabRef, or exports to it like Zotero, or Mendeley.
+
 This plugin is **read-only** when it comes to BibTeX entries: it won't let you add, delete, or modify entries within Neovim.
 Instead, it embraces the unix philosophy of doing just one thing, and doing it well. This way it stays minimal, simple, and fast.
 It complements your existing reference workflow by integrating citation lookup, file access, and note-taking into the editor you already use.
+
 Instead, **bibcite.nvim** is for users who:
 - Already manage their .bib file with some other tool
 - Want to insert citation keys into their writing quickly
