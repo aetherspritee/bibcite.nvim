@@ -2,13 +2,20 @@
 **bibcite.nvim** is a lightweight Neovim plugin designed to make your academic and research workflow more fluid.
 Quickly search through your bibliography, open associated notes, or open files- all from within your favourite editor!
 
+# Features
+- Insert citation keys with Telescope (fzf-lua integration planned)
+- Open external files (PDF, epub, whatever floats your boat) associated with BibTeX entries in your preferred file viewer.
+- Quickly view, navigate to, and edit or create Markdown/text notes linked to a citation.
+- Popup previews with author/title/year and quick note preview.
+- Fully configurable paths and behavior.
+
 # Purpose
 **bibcite.nvim** provides fast and simple access to BibTeX citation data and related materials such as associated files and notes while working inside Neovim.
-This plugin is *not* a comprehensive reference manager, but is instead intended to be used together with a tool that either directly saves as .bib like [Bibiman](https://codeberg.org/lukeflo/bibiman) or JabRef, or exports to it like Zotero, or Mendeley.
+This plugin is **not** a comprehensive reference manager, but is instead intended to be used together with a tool that either directly saves as .bib (like [Bibiman](https://codeberg.org/lukeflo/bibiman) or JabRef), or exports to it (like Zotero or Mendeley).
 
 This plugin is **read-only** when it comes to BibTeX entries: it won't let you add, delete, or modify entries within Neovim.
-Instead, it embraces the unix philosophy of doing just one thing, and doing it well. This way it stays minimal, simple, and fast.
-It complements your existing reference workflow by integrating citation lookup, file access, and note-taking into the editor you already use.
+This way it stays minimal, simple, and fast.
+It merely complements your existing reference workflow by integrating citation lookup, file access, and note-taking into the editor you already use.
 
 Instead, **bibcite.nvim** is for users who:
 - Already manage their .bib file with some other tool
@@ -18,15 +25,9 @@ Instead, **bibcite.nvim** is for users who:
 
 This plugin has great synergy when using something like [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide) or [obsidian.nvim](https://github.com/epwalsh/obsidian.nvim).
 
-# Features
-- Insert citation keys with Telescope (fzf-lua integration planned)
-- Open external files (PDF, epub, whatever floats your boat) associated with BibTeX entries in your preferred file viewer.
-- Quickly view, navigate to, and edit or create Markdown/text notes linked to a citation.
-- Popup previews with author/title/year and quick note preview.
-- Fully configurable paths and behavior.
-
 # Installation
 Install using your preferred package manager.
+
 ## Lazy.nvim
 ```lua
 {
@@ -90,7 +91,7 @@ Command	Description
 - `:CiteNote` - Open the note file for the citation under the cursor (prompts to creates one if missing).
 
 # File Matching
-When you invoke `:CiteOpen`, the plugin looks for the associated file in the following order.
+When you invoke `:CiteOpen`, or `:CiteNote` the plugin looks for the associated file in the following order.
 If a `file` is set in the `.bib` file, it takes precedence over a file in the central directory.
 
 ## 1. `file` field
@@ -107,14 +108,20 @@ This field may contain:
 - A relative path from the `pdf_dir` to the file (`papers/Smith2020.pdf`)
 - A JabRef-style hint: `:files/Sakai2004.pdf:PDF`, interpreted as relative to the `pdf_dir`. 
 
+This is not implemented yet for the `note` field yet. Let me know if you'd think this is useful!
+
 
 ## 2. Central directory
-This is a fallback for if no file field is found.
-The plugin will search inside `pdf_dir` for a case-insensitive match using the **citekey**, with a variety of supported extensions:
-e.g. smith2020.pdf, Smith2020.epub, SMITH2020.djvu, etc.
+This is a fallback for if no file field is found, as well as the standard method to locate notes.
+The plugin will search inside `pdf_dir` and `notes_dir`set in the config.
+If it finds a case-insensitive match using the **citekey**, it will be registered as a linked file.
+It will try to match to a variety of extensions and capitalisations:
+In `pdf_dir`: `smith2020.pdf`, `Smith2020.epub`, `SMITH2020.djvu`.
+In `notes_dir`: `smith2020.md`, `Smith2020.org`, `SMITH2020.txt`.
 
-# Note Matching
-Works exactly the same as the fallback method of file matching: Looks for a case-insensitive match with the **citekey**.
+# Loading `.bib` files
+On startup, the file set in the config as `bibtex_path` will be automatically loaded.
+In addition, any `.bib` files in the current working directory will also be loaded.
 
 # Requirements
 Requirements
