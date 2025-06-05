@@ -69,6 +69,7 @@ local function open_external_file(path)
       vim.fn.jobstart({ 'xdg-open', path }, { detach = true })
     elseif vim.fn.has 'macunix' == 1 then
       vim.fn.jobstart({ 'open', path }, { detach = true })
+      -- TODO: Add support for windows and BSD
     else
       vim.notify('[bibcite] No supported file opener found', vim.log.levels.ERROR)
     end
@@ -112,6 +113,7 @@ function M.open_external_file_of_refentry_under_cursor()
   if path and vim.fn.filereadable(path) == 1 then
     open_external_file(path)
   else
+    -- FIXME: Should open pdf dir as fallback. Somehow not implemented?? should check. I remember implementing this..
     vim.notify('[bibcite] File not found: ' .. (path or 'nil'), vim.log.levels.WARN)
   end
 end
@@ -136,6 +138,7 @@ local function prompt_and_create_note_file(citekey)
     return
   end
 
+  -- TODO: If the bib entry has anything in its 'comments' or 'note' field, automatically dump it into the file.
   fd:write(string.format('# Notes for %s\n\n', citekey))
   fd:close()
 

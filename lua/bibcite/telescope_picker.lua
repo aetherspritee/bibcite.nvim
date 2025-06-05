@@ -133,6 +133,7 @@ function M.telescope_entry_picker(prompt_title, on_select)
             table.insert(lines, 'N/A')
           end
 
+          -- TODO: Add first n lines of the notes you wrote.
           vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
         end,
       },
