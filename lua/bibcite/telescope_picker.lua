@@ -16,6 +16,10 @@ local function dictionary_values_only(entries_dict)
   return result
 end
 
+local function remove_newlines(value)
+  return value:gsub('[\r\n]', ' ')
+end
+
 -- Make an entry as a table.
 -- Set up in a way similar to https://github.com/nvim-telescope/telescope.nvim/blob/b4da76be54691e854d3e0e02c36b0245f945c2c7/lua/telescope/make_entry.lua#L4
 local function make_entry(entry)
@@ -36,12 +40,12 @@ local function make_entry(entry)
   local title = entry.title or ''
 
   local function make_display()
-    -- print(title)
+    -- print(key .. title)
     return displayer {
       { key },
-      { author },
-      -- FIXME: It crashes at displaying some title! Need to figure out which one and patch.
-      -- { title },
+      -- TODO: Do santization in loading the actual bib instead?
+      { remove_newlines(author) },
+      { remove_newlines(title) },
     }
   end
 
