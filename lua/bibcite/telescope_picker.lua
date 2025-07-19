@@ -5,12 +5,6 @@
 
 local bibtex = require 'bibcite.bibtex'
 
-local pickers = require 'telescope.pickers'
-local finders = require 'telescope.finders'
-local conf = require('telescope.config').values
-local actions = require 'telescope.actions'
-local action_state = require 'telescope.actions.state'
-
 local M = {}
 
 -- Telescope does not like key-value pair. So, small function to convert it to just the data, not with the key :)
@@ -22,14 +16,61 @@ local function dictionary_values_only(entries_dict)
   return result
 end
 
+-- Make an entry as a table.
+-- Set up in a way similar to https://github.com/nvim-telescope/telescope.nvim/blob/b4da76be54691e854d3e0e02c36b0245f945c2c7/lua/telescope/make_entry.lua#L4
+local function make_entry(entry)
+  local entry_display = require 'telescope.pickers.entry_display'
+
+  local displayer = entry_display.create {
+    separator = ' │ ',
+    items = {
+      { width = 20 }, -- key
+      { width = 25 }, -- author
+      { remaining = true }, -- title
+    },
+  }
+
+  -- Normalize only required fields
+  local key = entry.key or ''
+  local author = entry.author or ''
+  local title = entry.title or ''
+
+  local function make_display()
+    -- print(title)
+    return displayer {
+      { key },
+      { author },
+      -- FIXME: It crashes at displaying some title! Need to figure out which one and patch.
+      -- { title },
+    }
+  end
+
+  return {
+    value = entry,
+    ordinal = table.concat({ key, author, title }, ' '),
+    display = make_display,
+    key = entry.key,
+    author = entry.author,
+    title = entry.title,
+  }
+end
+
 -- Reusable Telescope picker function to select a BibTeX entry
 -- Accepts a prompt_title and a callback to call with the selected entry
 function M.telescope_entry_picker(prompt_title, on_select)
-  local has_telescope, telescope = pcall(require, 'telescope')
+  -- Return early if telescope is not installed.
+  -- Might implement something in the config at some point that allows you to use other pickers too.
+  local has_telescope, _ = pcall(require, 'telescope')
   if not has_telescope then
     vim.notify('[bibcite] Telescope is not available', vim.log.levels.ERROR)
     return
   end
+
+  local pickers = require 'telescope.pickers'
+  local finders = require 'telescope.finders'
+  local conf = require('telescope.config').values
+  local actions = require 'telescope.actions'
+  local action_state = require 'telescope.actions.state'
 
   local telescope_opts = {}
 
@@ -41,32 +82,13 @@ function M.telescope_entry_picker(prompt_title, on_select)
         -- Fortunately we have all the fields stored on the actual value of
         -- The key-value pair. So we can pass bibtex.entries
         results = dictionary_values_only(bibtex.entries),
-        entry_maker = function(entry)
-          local search_text = table.concat({
-            entry.key or '',
-            entry.author or '',
-            entry.title or '',
-            entry.year or '',
-            entry.journal or '',
-          }, ' ')
-          return {
-            -- So we have access to the original entry
-            value = entry,
-            -- What is displayed in the picker window
-            display = entry.key,
-            -- What is actually searched for
-            ordinal = search_text,
-            -- -- These are needed to prevent Telescope from trying to "jump" the cursor
-            -- filename = vim.api.nvim_buf_get_name(0), -- or just some placeholder file
-            -- lnum = 1,
-          }
-        end,
+        entry_maker = make_entry,
       },
       sorter = conf.generic_sorter(telescope_opts),
 
       -- Call the provided functor when you select it.
       -- This implementation is almost verbatim that of the telescope API example for attach_mappings.
-      attach_mappings = function(prompt_bufnr, map)
+      attach_mappings = function(prompt_bufnr, _)
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
