@@ -17,7 +17,10 @@ local function dictionary_values_only(entries_dict)
 end
 
 local function remove_newlines(value)
-  return value:gsub('[\r\n]', ' ')
+  -- Ensuring it is a string shouldn't be necessary, but here just in case.
+  local str = tostring(value or '')
+  -- If you have a newline in there, telescope will throw a "index outside of buffer" error.
+  return str:gsub('[\r\n]', ' ')
 end
 
 -- Make an entry as a table.
@@ -42,10 +45,10 @@ local function make_entry(entry)
   local function make_display()
     -- print(key .. title)
     return displayer {
-      { key },
+      { remove_newlines(key), nil },
       -- TODO: Do santization in loading the actual bib instead?
-      { remove_newlines(author) },
-      { remove_newlines(title) },
+      { remove_newlines(author), nil },
+      { remove_newlines(title), nil },
     }
   end
 
