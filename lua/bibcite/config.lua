@@ -17,6 +17,8 @@ local M = {
   },
 }
 
+-- TODO: Expose options for which columns to show in telescope.
+
 -- Merge user-provided options with defaults. User options take
 -- precedence.
 function M.setup(opts)
