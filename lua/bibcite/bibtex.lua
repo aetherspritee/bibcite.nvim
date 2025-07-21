@@ -19,6 +19,7 @@ local function update_brace_level(line, current_level)
 end
 
 -- TODO: In titles/fields that {Use} {Curly Braces} {Everywhere}, strip the curly braces.
+-- TODO: Ignore the 'jabref-meta' field- that one is still being loaded.
 
 -- Helper to extract a balanced value starting at position 'start_pos' in 'str'
 local function extract_balanced_value(str, start_pos)
