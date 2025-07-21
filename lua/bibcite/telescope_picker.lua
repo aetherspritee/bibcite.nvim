@@ -34,6 +34,7 @@ local function make_entry(entry)
     items = {
       { width = 18 }, -- citekey
       { width = 25 }, -- author
+      { width = 4 }, -- year
       { remaining = true }, -- title
     },
   }
@@ -42,6 +43,7 @@ local function make_entry(entry)
   local key = entry.key or ''
   local author = entry.author or ''
   local title = entry.title or ''
+  local year = entry.year or ''
 
   local function make_display()
     -- print(key .. title)
@@ -50,6 +52,7 @@ local function make_entry(entry)
       { remove_newlines(key), 'TelescopeResultsIdentifier' },
       -- TODO: Do santization in loading the actual bib instead?
       { remove_newlines(author), 'TelescopeResultsNormal' },
+      { remove_newlines(year), 'TelescopeResultsIdentifier' },
       { remove_newlines(title), 'TelescopeResultsComment' },
     }
   end
