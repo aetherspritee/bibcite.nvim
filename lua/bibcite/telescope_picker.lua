@@ -29,9 +29,10 @@ local function make_entry(entry)
   local entry_display = require 'telescope.pickers.entry_display'
 
   local displayer = entry_display.create {
-    separator = ' │ ',
+    -- Three spaces because long items are trimmed using the fullwidth character '… '.
+    separator = '   ',
     items = {
-      { width = 20 }, -- key
+      { width = 18 }, -- citekey
       { width = 25 }, -- author
       { remaining = true }, -- title
     },
@@ -45,10 +46,11 @@ local function make_entry(entry)
   local function make_display()
     -- print(key .. title)
     return displayer {
-      { remove_newlines(key), nil },
+      -- Second column here uses the built-in Telescope highlight groups, so that they can be overridden by the user.
+      { remove_newlines(key), 'TelescopeResultsIdentifier' },
       -- TODO: Do santization in loading the actual bib instead?
-      { remove_newlines(author), nil },
-      { remove_newlines(title), nil },
+      { remove_newlines(author), 'TelescopeResultsNormal' },
+      { remove_newlines(title), 'TelescopeResultsComment' },
     }
   end
 
