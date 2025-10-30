@@ -93,6 +93,7 @@ Command	Description
 - `:CitePeek` - Show a popup preview of the citation under the cursor (author, title, year, PDF/note status).
 - `:CiteOpen` - Open the PDF or external file linked to the citation under the cursor. If the file is a text-like file, it will be opened in neovim directly. If it is not, it will open it in an external program, using your preferred file viewer.
 - `:CiteNote` - Open the note file for the citation under the cursor (prompts to creates one if missing).
+- `:CiteList` - List all entries in Telescope. From this list, you can use keybindings to open the PDF (<C-o>), open the note (<C-n>), or open the entry in the bibtex source file (<C-s>).
 
 # File Matching
 When you invoke `:CiteOpen`, or `:CiteNote` the plugin looks for the associated file in the following order.

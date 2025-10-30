@@ -65,6 +65,8 @@ local function parse_bibtex(file)
   local current_entry_lines = {}
   local brace_level = 0
   local inside_entry = false
+  local line_num = 0
+  local entry_start_line = 0
 
   -- Have these here so that hopefully the JIT picks up on it and
   -- re-uses them instead of re-assessing the pattern every single time.
@@ -72,10 +74,12 @@ local function parse_bibtex(file)
   local exit_pattern = '([%w_]+)%s*=%s*'
 
   for line in io.lines(file) do
+    line_num = line_num + 1
     if not inside_entry and line:match '^@' then
       current_entry_lines = { line }
       brace_level = update_brace_level(line, 0)
       inside_entry = true
+      entry_start_line = line_num
     elseif inside_entry then
       table.insert(current_entry_lines, line)
       brace_level = update_brace_level(line, brace_level)
@@ -88,6 +92,8 @@ local function parse_bibtex(file)
         if entry_type and key then
           entry.key = key
           entry.type = entry_type
+          entry.file_path = file
+          entry.line_num = entry_start_line
 
           local pos = 1
           while true do
@@ -172,6 +178,15 @@ function M.debug_print_entries()
   end
   for _, entry in pairs(M.entries) do
     print(vim.inspect(entry))
+  end
+end
+
+function M.open_bibtex_entry(entry)
+  if entry.file_path and entry.line_num then
+    vim.cmd('edit ' .. vim.fn.fnameescape(entry.file_path))
+    vim.api.nvim_win_set_cursor(0, { entry.line_num, 0 })
+  else
+    vim.notify('[bibcite] No file path or line number for entry: ' .. entry.key, vim.log.levels.WARN)
   end
 end
 

@@ -69,7 +69,7 @@ end
 
 -- Reusable Telescope picker function to select a BibTeX entry
 -- Accepts a prompt_title and a callback to call with the selected entry
-function M.telescope_entry_picker(prompt_title, on_select)
+function M.telescope_entry_picker(prompt_title, on_select, attach_mappings_opts)
   -- Return early if telescope is not installed.
   -- Might implement something in the config at some point that allows you to use other pickers too.
   local has_telescope, _ = pcall(require, 'telescope')
@@ -108,6 +108,18 @@ function M.telescope_entry_picker(prompt_title, on_select)
             on_select(selection.value)
           end
         end)
+
+        if attach_mappings_opts then
+          for key, func in pairs(attach_mappings_opts) do
+            actions.register(key, function()
+              local selection = action_state.get_selected_entry()
+              if selection then
+                func(selection.value)
+              end
+            end)
+          end
+        end
+
         return true
       end,
     })

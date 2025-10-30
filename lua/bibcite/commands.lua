@@ -2,6 +2,7 @@ local bibtex = require 'bibcite.bibtex'
 local open_external_file = require 'bibcite.open_external_file'
 local telescope_picker = require 'bibcite.telescope_picker'
 local popup = require 'bibcite.popup'
+local list = require 'bibcite.list'
 
 local M = {}
 
@@ -27,6 +28,8 @@ function M.setup()
   vim.api.nvim_create_user_command('CiteOpen', open_external_file.open_external_file_of_refentry_under_cursor, {})
 
   vim.api.nvim_create_user_command('CiteNote', open_external_file.open_note_of_refentry_under_cursor, {})
+
+  vim.api.nvim_create_user_command('CiteList', list.list_all_entries, {})
 end
 
 return M

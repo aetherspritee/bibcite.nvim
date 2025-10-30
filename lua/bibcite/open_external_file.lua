@@ -165,4 +165,22 @@ function M.open_note_of_refentry_under_cursor()
   end
 end
 
+function M.open_external_file_of_entry(entry)
+  local path = resolve_pdf_field_path(entry.file)
+  if path and vim.fn.filereadable(path) == 1 then
+    open_external_file(path)
+  else
+    vim.notify('[bibcite] File not found: ' .. (path or 'nil'), vim.log.levels.WARN)
+  end
+end
+
+function M.open_note_of_entry(entry)
+  local note_path = resolve_note_path(entry.key)
+  if note_path then
+    open_external_file(note_path)
+  else
+    prompt_and_create_note_file(entry.key)
+  end
+end
+
 return M
