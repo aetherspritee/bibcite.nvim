@@ -1,3 +1,4 @@
+
 -- This file contains a reusable picker for bib entries, using the Snacks library.
 
 local bibtex = require 'bibcite.bibtex'
@@ -7,7 +8,7 @@ local M = {}
 -- Reusable Snacks picker function to select a BibTeX entry
 -- Accepts a prompt_title and a callback to call with the selected entry
 function M.snacks_entry_picker(prompt_title, on_select, attach_mappings_opts)
-  local has_snacks, snacks = pcall(require, "snacks")
+  local has_snacks, snacks_picker = pcall(require, "snacks.picker")
 
   if not has_snacks then
     vim.notify('[bibcite] Snacks is not available', vim.log.levels.ERROR)
@@ -32,7 +33,14 @@ function M.snacks_entry_picker(prompt_title, on_select, attach_mappings_opts)
     }
   end
 
-  local picker = snacks.picker({
+  local mappings = {}
+  if attach_mappings_opts then
+    for key, func in pairs(attach_mappings_opts) do
+      mappings[key] = func
+    end
+  end
+
+  snacks_picker.open({
     title = prompt_title,
     items = entries,
     format = format_entry,
@@ -41,19 +49,8 @@ function M.snacks_entry_picker(prompt_title, on_select, attach_mappings_opts)
         on_select(item)
       end
     end,
+    mappings = mappings,
   })
-
-  if attach_mappings_opts then
-    for key, func in pairs(attach_mappings_opts) do
-      picker:map("n", key, function(item)
-        if item then
-          func(item)
-        end
-      end)
-    end
-  end
-
-  picker:show()
 end
 
 return M
