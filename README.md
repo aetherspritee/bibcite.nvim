@@ -3,7 +3,7 @@
 Quickly search through your bibliography, open associated notes, or open files- all from within your favourite editor!
 
 # Features
-- Insert citation keys with Telescope (fzf-lua integration planned)
+- Insert citation keys with Snacks (fzf-lua integration planned)
 - Open external files (PDF, epub, whatever floats your boat) associated with BibTeX entries in your preferred file viewer.
 - Quickly view, navigate to, and edit or create Markdown/text notes linked to a citation.
 - Popup previews with author/title/year and quick note preview.
@@ -89,11 +89,11 @@ The following configuration keys can be set:
 
 # Commands
 Command	Description
-- `:CiteInsert` - Use Telescope to pick and insert a citation key at the cursor.
+- `:CiteInsert` - Use Snacks to pick and insert a citation key at the cursor.
 - `:CitePeek` - Show a popup preview of the citation under the cursor (author, title, year, PDF/note status).
 - `:CiteOpen` - Open the PDF or external file linked to the citation under the cursor. If the file is a text-like file, it will be opened in neovim directly. If it is not, it will open it in an external program, using your preferred file viewer.
 - `:CiteNote` - Open the note file for the citation under the cursor (prompts to creates one if missing).
-- `:CiteList` - List all entries in Telescope. From this list, you can use keybindings to open the PDF (<C-o>), open the note (<C-n>), or open the entry in the bibtex source file (<C-s>).
+- `:CiteList` - List all entries in Snacks. From this list, you can use keybindings to open the PDF (<C-o>), open the note (<C-n>), or open the entry in the bibtex source file (<C-s>).
 
 # File Matching
 When you invoke `:CiteOpen`, or `:CiteNote` the plugin looks for the associated file in the following order.
@@ -132,7 +132,7 @@ In addition, any `.bib` files in the current working directory will also be load
 Requirements
 - Neovim 0.8+
 - xdg-open or open (for opening external files)
-- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (optional, for :CiteInsert)
+- [snacks.nvim](https://github.com/folke/snacks.nvim)
 
 # License
 This plugin is licensed under GPLv3 

@@ -1,6 +1,6 @@
 local bibtex = require 'bibcite.bibtex'
 local open_external_file = require 'bibcite.open_external_file'
-local telescope_picker = require 'bibcite.telescope_picker'
+local snacks_picker = require 'bibcite.snacks_picker'
 local popup = require 'bibcite.popup'
 local list = require 'bibcite.list'
 
@@ -10,7 +10,7 @@ local M = {}
 function M.setup()
   -- Create :CiteInsert command to insert citation key into buffer
   vim.api.nvim_create_user_command('CiteInsert', function()
-    telescope_picker.telescope_entry_picker('Insert Citation', function(entry)
+    snacks_picker.snacks_entry_picker('Insert Citation', function(entry)
       if entry then
         vim.api.nvim_put({ entry.key }, '', true, true)
       end

@@ -2,14 +2,14 @@
 -- This file is responsible for the `CiteList` command.
 -- It will display all entries in a Telescope picker, with keybindings to open the PDF, notes, or the BibTeX entry.
 
-local telescope_picker = require 'bibcite.telescope_picker'
+local snacks_picker = require 'bibcite.snacks_picker'
 local open_external_file = require 'bibcite.open_external_file'
 local bibtex = require 'bibcite.bibtex'
 
 local M = {}
 
 function M.list_all_entries()
-  telescope_picker.telescope_entry_picker('All Entries', function(entry)
+  snacks_picker.snacks_entry_picker('All Entries', function(entry)
     -- Default action: do nothing
   end, {
     ['<C-o>'] = function(entry)
