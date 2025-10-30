@@ -38,7 +38,9 @@ function M.snacks_entry_picker(prompt_title, on_select, attach_mappings_opts)
   local mappings = {}
   if attach_mappings_opts then
     for key, func in pairs(attach_mappings_opts) do
-      mappings[key] = func
+      mappings[key] = function(item)
+        func(item)
+      end
     end
   end
 
